@@ -2,49 +2,54 @@
 <html>
 <head>
     <title>Dice Roller</title>
-</head>
-<body>
-    {% if not show_history %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
-        h2 {
-            display: none;
+        .bg-image {
+            background-image: url("../templates/background.png");
+            background-size: cover;
         }
     </style>
-    {% endif %}
-    <h1>Dice Roller</h1>
-    <form action="/" method="POST">
-        <label for="dice_format">Enter dice format:</label>
-        <input type="text" id="dice_format" name="dice_format" placeholder="e.g., 2d6" required>
-        <button type="submit">Roll Dice</button>
-    </form>
+</head>
+<body class="bg-image">
+    <div class="container">
+        <h1>Dice Roller</h1>
+        <form action="/" method="POST">
+            <div class="mb-3">
+                <label for="dice_format" class="form-label">Enter dice format:</label>
+                <input type="text" id="dice_format" name="dice_format" class="form-control" placeholder="e.g., 2d6" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Roll Dice</button>
+        </form>
 
-    {% if result %}
-    <h2>Roll Result:</h2>
-    <p>Dice Format: {{ dice_format }}</p>
-    <p>Rolled: {{ result.rolls }}</p>
-    <p>Total: {{ result.total }}</p>
-    {% endif %}
+        {% if result %}
+        <h2>Roll Result:</h2>
+        <p>Dice Format: {{ dice_format }}</p>
+        <p>Rolled: {{ result.rolls }}</p>
+        <p>Total: {{ result.total }}</p>
+        {% endif %}
 
-    {% if error_message %}
-    <h2>Error:</h2>
-    <p>{{ error_message }}</p>
-    {% endif %}
+        {% if error_message %}
+        <h2>Error:</h2>
+        <p>{{ error_message }}</p>
+        {% endif %}
 
-    <hr>
+        <hr>
 
-    <h2>Roll History:</h2>
-    {% if show_history %}
-    <ul>
-    {% for entry in dice_history %}
-        <li>{{ entry.rolls }} (Total: {{ entry.total }})</li>
-    {% endfor %}
-    </ul>
-    {% endif %}
+        
+        {% if show_history %}
+        <h2>Roll History:</h2>
+        <ul>
+        {% for entry in dice_history %}
+            <li>{{ entry.rolls }} (Total: {{ entry.total }})</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
 
-    <form action="/" method="GET">
-        <button type="submit" name="history" value="{% if show_history %}false{% else %}true{% endif %}">
-            {% if show_history %}Hide{% else %}View{% endif %} Roll History
-        </button>
-    </form>
+        <form action="/" method="GET">
+            <button type="submit" name="history" value="{% if show_history %}false{% else %}true{% endif %}" class="btn btn-secondary">
+                {% if show_history %}Hide{% else %}View{% endif %} Roll History
+            </button>
+        </form>
+    </div>
 </body>
 </html>
