@@ -1,4 +1,5 @@
 import random
+import re
 from flask import Flask, request, render_template
 
 app = Flask(__name__)
@@ -27,12 +28,22 @@ def index():
     return render_template("index.html", items=items, error_message=error_message, show_history=show_history)
 
 def roll_dice(dice_format):
-    num_dice, num_sides = parse_dice_roll_input(dice_format)
-    if num_dice is None or num_sides is None or num_sides <= 1 or num_dice <= 0:
-        return None, "Invalid dice format. Please use format 'xdy' where x is the number of dice and y is the number of sides per die. X must be an integer number greater than 0. Y must be an integer number greater than 1."
-    rolls = [random.randint(1, num_sides) for _ in range(num_dice)]
-    total = sum(rolls)
-    return {"rolls": rolls, "total": total}, None
+    try:
+        match = re.match(r'(\d+)d(\d+)([+\-]\d+)?', dice_format)
+        if match:
+            num_dice = int(match.group(1))
+            dice_sides = int(match.group(2))
+            modifier = match.group(3)
+            rolls = [random.randint(1, dice_sides) for _ in range(num_dice)]
+            total = sum(rolls)
+            if modifier:
+                total += int(modifier)
+            result = {'rolls': rolls, 'total': total}
+            return result, None
+        else:
+            return None, 'Invalid dice format. Please enter the format as XdY[+/-Z].'
+    except Exception as e:
+        return None, str(e)
 
 def parse_dice_roll_input(dice_format):
     try:
