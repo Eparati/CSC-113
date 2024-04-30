@@ -2,48 +2,64 @@
 <html>
 <head>
     <title>Dice Roller</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Dice Roller</h1>
-        <form action="/" method="POST">
-            <div class="mb-3">
-                <label for="dice_format" class="form-label">Enter dice format:</label>
-                <input type="text" id="dice_format" name="dice_format" class="form-control" placeholder="e.g., 2d6+3 or 1d8-6" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Roll Dice</button>
-        </form>
-
-        {% if result %}
-        <h2>Roll Result:</h2>
-        <p>Dice Format: {{ dice_format }}</p>
-        <p>Rolled: {{ result.rolls }}</p>
-        <p>Total: {{ result.total }}</p>
+    <h1>Dice Roller</h1>
+    <form method="POST" action="/">
+        <label for="dice_format">Dice Format:</label>
+        <input type="text" id="dice_format" name="dice_format" placeholder="e.g. 2d6+4" required>
+        <br>
+        <label for="roll_source">Character Name:</label>
+        <input type="text" id="roll_source" name="roll_source" placeholder="Enter character name" required>
+        <br>
+        <input type="submit" value="Roll Dice">
+    </form>
+    <hr>
+    <h2>Roll Results:</h2>
+    <table>
+        <tr>
+            <th>Character Name</th>
+            <th>Dice Format</th>
+            <th>Rolls</th>
+            <th>Total</th>
+        </tr>
+        {% if dice_history %}
+            {% for result in dice_history %}
+                <tr>
+                    <td>{{ result['source'] }}</td>
+                    <td>{{ result['dice_format'] }}</td>
+                    <td>{{ result['rolls'] }}</td>
+                    <td>{{ result['total'] }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="4">No rolls yet.</td>
+            </tr>
         {% endif %}
-
-        {% if error_message %}
-        <h2>Error:</h2>
-        <p>{{ error_message }}</p>
-        {% endif %}
-
-        <hr>
-
-        
-        {% if show_history %}
-        <h2>Roll History:</h2>
-        <ul>
-        {% for entry in dice_history %}
-            <li>{{ entry.rolls }} (Total: {{ entry.total }})</li>
+    </table>
+    <hr>
+    <h2>Character Names:</h2>
+    <ul>
+        {% for character in characters %}
+            <li>{{ character }}</li>
         {% endfor %}
-        </ul>
-        {% endif %}
-
-        <form action="/" method="GET">
-            <button type="submit" name="history" value="{% if show_history %}false{% else %}true{% endif %}" class="btn btn-secondary">
-                {% if show_history %}Hide{% else %}View{% endif %} Roll History
-            </button>
-        </form>
-    </div>
+    </ul>
+    <form method="POST">
+        <label for="new_character">New Character Name:</label>
+        <input type="text" id="new_character" name="new_character" placeholder="Enter new character name" required>
+        <input type="hidden" name="action" value="add_character">
+        <input type="submit" value="Add Character">
+    </form>
+    <form method="POST">
+        <label for="delete_character">Delete Character:</label>
+        <select id="delete_character" name="delete_character">
+            {% for character in characters %}
+                <option value="{{ character }}">{{ character }}</option>
+            {% endfor %}
+        </select>
+        <input type="hidden" name="action" value="delete_character">
+        <input type="submit" value="Delete Character">
+    </form>
 </body>
 </html>

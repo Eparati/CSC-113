@@ -4,30 +4,27 @@ from flask import Flask, request, render_template
 
 app = Flask(__name__)
 
-# Initialize an empty list to store items
-items = []
-
-# Initialize an empty list to store rolled dice sets and totals
 dice_history = []
+characters = []
 
 @app.route('/', methods=['GET', 'POST'])
-def index():
-    error_message = None
-    show_history = False
+def dice_roller():
     if request.method == 'POST':
-        user_input = request.form['dice_format']
-        result, error_message = roll_dice(user_input)
-        if result is not None:
-            if len(dice_history) >= 5:
-                dice_history.pop(0)  # Remove the earliest entry if the limit is reached
-            dice_history.append(result)
-        return render_template("index.html", result=result, dice_format=user_input, items=items, dice_history=dice_history, error_message=error_message, show_history=show_history)
-    elif request.method == 'GET':
-        show_history = request.args.get('history') == 'true'
-        return render_template("index.html", items=items, dice_history=dice_history, error_message=error_message, show_history=show_history)
-    return render_template("index.html", items=items, error_message=error_message, show_history=show_history)
+        action = request.form['action']
+        if action == 'add_character':
+            new_character = request.form['new_character']
+            characters.append(new_character)
+        elif action == 'delete_character':
+            delete_character = request.form['delete_character']
+            characters.remove(delete_character)
+        else:
+            dice_format = request.form['dice_format']
+            roll_source = request.form['roll_source']
+            result, error_message = roll_dice(dice_format, roll_source)
+            return render_template('index.html', dice_format=dice_format, result=result, error_message=error_message, dice_history=dice_history, characters=characters)
+    return render_template('index.html', dice_history=dice_history, characters=characters)
 
-def roll_dice(dice_format):
+def roll_dice(dice_format, roll_source):
     try:
         match = re.match(r'(\d+)d(\d+)([+\-]\d+)?', dice_format)
         if match:
@@ -38,19 +35,13 @@ def roll_dice(dice_format):
             total = sum(rolls)
             if modifier:
                 total += int(modifier)
-            result = {'rolls': rolls, 'total': total}
+            result = {'rolls': rolls, 'total': total, 'source': roll_source, 'dice_format': dice_format}
+            dice_history.append(result)
             return result, None
         else:
             return None, 'Invalid dice format. Please enter the format as XdY[+/-Z].'
     except Exception as e:
         return None, str(e)
 
-def parse_dice_roll_input(dice_format):
-    try:
-        num_dice, num_sides = map(int, dice_format.split('d'))
-        return num_dice, num_sides
-    except:
-        return None, None
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run()
