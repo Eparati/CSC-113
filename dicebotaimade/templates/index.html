@@ -1,7 +1,89 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <!-- <link rel="stylesheet" href="css/pico.min.css" /> -->
     <title>Dice Roller</title>
+    <style>
+        /* CSS styles go here */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+        }
+        
+        h1 {
+            color: #ffcc00;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+        
+        p {
+            color: #bbb;
+        }
+        .alternate {
+            background-color: #333;
+            padding: 2px;
+            display: inline;
+        }
+        
+        .alternate span {
+            color: #bbb;
+        }
+        
+        .alternate span:nth-child(2n+1) {
+            color: #ffcc00;
+        }
+    </style>
+    <script>
+        // JavaScript code goes here
+        function generateAlternateColors(text) {
+            var container = document.createElement("div");
+            container.classList.add("container");
+
+            var heading = document.createElement("h1");
+            heading.innerText = "Welcome to Character-by-Character Alternating Text Colors!";
+            heading.style.color = "#ffcc00";
+            container.appendChild(heading);
+
+            var paragraph1 = document.createElement("p");
+            paragraph1.innerText = "This is an example of alternating text colors character by character, ignoring whitespace.";
+            container.appendChild(paragraph1);
+
+            var paragraph2 = document.createElement("p");
+            paragraph2.innerText = "You can customize the colors and styles to your preference.";
+            container.appendChild(paragraph2);
+
+            var paragraph3 = document.createElement("p");
+            paragraph3.classList.add("alternate");
+
+            for (var i = 0; i < text.length; i++) {
+                var span = document.createElement("span");
+                span.innerText = text[i];
+                if (i % 2 === 0) {
+                    span.style.color = "#bbb";
+                } else {
+                    span.style.color = "#ffcc00";
+                }
+                paragraph3.appendChild(span);
+            }
+
+            container.appendChild(paragraph3);
+
+            document.body.appendChild(container);
+        }
+
+        // Example usage
+        var text = "This is an example";
+        generateAlternateColors(text);
+    </script>
 </head>
 <body>
     <h1>Dice Roller</h1>
