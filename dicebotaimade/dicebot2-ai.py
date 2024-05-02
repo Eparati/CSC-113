@@ -10,18 +10,21 @@ characters = []
 @app.route('/', methods=['GET', 'POST'])
 def dice_roller():
     if request.method == 'POST':
-        action = request.form['action']
+        action = request.form.get('action')
         if action == 'add_character':
-            new_character = request.form['new_character']
-            characters.append(new_character)
+            new_character = request.form.get('new_character')
+            if new_character:
+                characters.append(new_character)
         elif action == 'delete_character':
-            delete_character = request.form['delete_character']
-            characters.remove(delete_character)
+            delete_character = request.form.get('delete_character')
+            if delete_character in characters:
+                characters.remove(delete_character)
         else:
-            dice_format = request.form['dice_format']
-            roll_source = request.form['roll_source']
-            result, error_message = roll_dice(dice_format, roll_source)
-            return render_template('index.html', dice_format=dice_format, result=result, error_message=error_message, dice_history=dice_history, characters=characters)
+            dice_format = request.form.get('dice_format')
+            roll_source = request.form.get('roll_source')
+            if dice_format and roll_source:
+                result, error_message = roll_dice(dice_format, roll_source)
+                return render_template('index.html', dice_format=dice_format, result=result, error_message=error_message, dice_history=dice_history, characters=characters)
     return render_template('index.html', dice_history=dice_history, characters=characters)
 
 def roll_dice(dice_format, roll_source):
