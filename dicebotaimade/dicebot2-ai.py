@@ -1,6 +1,7 @@
 import random
 import re
-from flask import Flask, request, render_template
+import string
+from flask import Flask, request, render_template, session
 
 app = Flask(__name__)
 
@@ -9,6 +10,11 @@ characters = []
 
 @app.route('/', methods=['GET', 'POST'])
 def dice_roller():
+    if 'secret_key' not in session:
+        session['secret_key'] = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
+    app.secret_key = session['secret_key']
+    if 'font_size' not in session:
+        session['font_size'] = '16'
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'add_character':
@@ -24,8 +30,11 @@ def dice_roller():
             roll_source = request.form.get('roll_source')
             if dice_format and roll_source:
                 result, error_message = roll_dice(dice_format, roll_source)
-                return render_template('index.html', dice_format=dice_format, result=result, error_message=error_message, dice_history=dice_history, characters=characters)
-    return render_template('index.html', dice_history=dice_history, characters=characters)
+                font_size = request.form.get('font_size')
+                session['font_size'] = font_size
+                return render_template('index.html', dice_format=dice_format, result=result, error_message=error_message, dice_history=dice_history, characters=characters, font_size=session['font_size'])
+
+    return render_template('index.html', dice_history=dice_history, characters=characters, font_size=session['font_size'])
 
 def roll_dice(dice_format, roll_source):
     try:

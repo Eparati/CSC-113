@@ -10,8 +10,7 @@
             font-family: Arial, sans-serif;
             background-color: #1e1e1e;
             color: #ffcc00;
-            /* font-size: {{ font_size if font_size else '16px' }}; */
-        
+            font-size: font_size if font_size else '16px';  /* Use the selected font size or default to 16px */
         }
         
         h1 {
@@ -49,7 +48,7 @@
     //legacy script section, unneeded
     //</script>
 </head>
-<body class="font-size-{{ font_size }}">
+<body>
     <h1>Dice Roller</h1>
     <form method="POST" action="/">
         <label for="dice_format">Dice Format:</label>
