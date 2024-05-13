@@ -7,12 +7,26 @@
     <style>
         /* CSS styles go here */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Times New Roman', Times, serif;
             background-color: #1e1e1e;
             color: #ffcc00;
             /* font-size: {{ font_size if font_size else '16px' }}; */
+            }
+            .font-size-16 {
+            font-size: 16px;
+            }
         
-        }
+            .font-size-18 {
+            font-size: 18px;
+            }
+        
+            .font-size-20 {
+            font-size: 20px;
+            }
+        
+            .font-size-22 {
+            font-size: 22px;
+            }
         
         h1 {
             color: #ffcc00;
@@ -45,12 +59,13 @@
         *}
         **/
     </style>
-    //<script>
+    <script>
     //legacy script section, unneeded
-    //</script>
+    </script>
 </head>
 <body class="font-size-{{ font_size }}">
     <h1>Dice Roller</h1>
+    
     <form method="POST" action="/">
         <label for="dice_format">Dice Format:</label>
         <input type="text" id="dice_format" name="dice_format" placeholder="e.g. 2d6+4" required>
@@ -107,14 +122,23 @@
         <input type="hidden" name="action" value="delete_character">
         <input type="submit" value="Delete Character">
         <br>
-    <label for="font_size">Font Size:</label>
-    <select id="font_size" name="font_size">
-        <option value="16px">16px</option>
-        <option value="18px">18px</option>
-        <option value="20px">20px</option>
-        <option value="22px">22px</option>
-    </select>
-    <input type="submit" value="Roll Dice">
+    </form>
+    <form method ="POST" action="/">
+        <input type="hidden" name="action" value="update_font_size">
+        <label for="font_size">Font Size:</label>
+        <select id="font_size" name="font_size" onchange="this.form.submit()">            
+            <option value="16" >16px</option>
+            <option value="18" >18px</option>
+            <option value="20" >20px</option>
+            <option value="22" >22px</option>
+        <!--
+        <option value="16px" {% if font_size == '16px' %}selected{% endif %}>16px</option>
+        <option value="18px" {% if font_size == '18px' %}selected{% endif %}>18px</option>
+        <option value="20px" {% if font_size == '20px' %}selected{% endif %}>20px</option>
+        <option value="22px" {% if font_size == '22px' %}selected{% endif %}>22px</option>
+        -->
+        </select>
+    <input type="submit" value="Change Font Size">
     </form>
 </body>
 </html>

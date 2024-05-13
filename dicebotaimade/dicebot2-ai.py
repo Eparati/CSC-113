@@ -4,17 +4,20 @@ import string
 from flask import Flask, request, render_template, session
 
 app = Flask(__name__)
-
+app.secret_key = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
 dice_history = []
 characters = []
+#debug:
+#print(app.secret_key) print statement didn't work, not super important
+def get_font_size():
+    if 'font_size' not in session:
+        session['font_size'] = 16
 
+    font_size = session['font_size']
 @app.route('/', methods=['GET', 'POST'])
 def dice_roller():
-    if 'secret_key' not in session:
-        session['secret_key'] = ''.join(random.choices(string.ascii_letters + string.digits, k=32))
-    app.secret_key = session['secret_key']
-    if 'font_size' not in session:
-        session['font_size'] = '16'
+    font_size = get_font_size()
+
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'add_character':
@@ -25,15 +28,17 @@ def dice_roller():
             delete_character = request.form.get('delete_character')
             if delete_character in characters:
                 characters.remove(delete_character)
+        elif action == 'update_font_size':
+            new_font_size = int(request.form.get('font_size', 16))  # Use default if no value is provided
+            session['font_size'] = new_font_size
+            font_size = new_font_size
+            #return redirect('/')
         else:
             dice_format = request.form.get('dice_format')
             roll_source = request.form.get('roll_source')
             if dice_format and roll_source:
                 result, error_message = roll_dice(dice_format, roll_source)
-                font_size = request.form.get('font_size')
-                session['font_size'] = font_size
-                return render_template('index.html', dice_format=dice_format, result=result, error_message=error_message, dice_history=dice_history, characters=characters, font_size=session['font_size'])
-
+                return render_template('index.html', dice_format=dice_format, result=result, error_message=error_message, dice_history=dice_history, characters=characters, font_size=font_size)
     return render_template('index.html', dice_history=dice_history, characters=characters, font_size=session['font_size'])
 
 def roll_dice(dice_format, roll_source):
